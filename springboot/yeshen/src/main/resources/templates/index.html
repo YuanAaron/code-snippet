@@ -1,0 +1,147 @@
+<html>
+<head>
+    <title>Freemarker入门</title>
+</head>
+<body>
+<pre>
+    <!--我是注释，客户端能看到的注释内容-->
+    <#--我是注释，客户端不能看到的注释内容-->
+
+    <#assign x="Q&A community"/>
+        x: ${x}
+    <#assign z="${x}nihao"/>
+        z: ${z}
+        z: ${x+z}
+
+    <#include "header.html">
+
+    ${name}
+    <!--如果不存在或null，设置默认值为空-->
+    ${value1!}
+
+    <!--boolean类型作为条件-->
+    <!--判断方法一：boolVal==true；判断方法二：转换成字符串,比如boolVal?c=="true"-->
+
+    <!--boolean类型取值-->
+    <!--如果布尔值是true，返回“true”,否则返回“false”-->
+    <!--boolVal?c 或者 boolVal?string("true","false")-->
+
+    <!--如果布尔值是true,那么返回“yes”,否则返回“no”。-->
+    <!--boolVal?string("yes","no")-->
+    <#if boolVal==true>
+        ${boolVal?string("yes","no")}
+    </#if>
+
+    <!--时间类型-->
+    ${date?string('yyyy-MM-dd HH:mm:ss')}
+
+    <!--输出html原始内容-->
+    ${test?html}
+
+    <!--比较运算符和逻辑运算符-->
+    <#assign m=65/>
+    <#if (m &gt; 90 || m == 90) && (m &lt; 100 || m == 100)>
+        <font color="red">m >= 90 && m <= 100</font>
+    <#elseif m &lt; 90 && (m &gt; 60 || m == 60)>
+        <font color="red">m<90 && m>=60</font>
+    <#else>
+        <font color="red">m < 60</font>
+    </#if>
+
+    <#if colors??><!--也可以是colors?exists，用于判断colors是否为null或不存在-->
+    <!--List集合-->
+    <#list colors as color>
+        ${color_index} ${color}
+    </#list>
+    </#if>
+
+    <#assign numbers=[2,3,5,1,9,8,7]/>
+    <#list numbers?sort as number><!--默认升序，降序用numbers?sort?reverse-->
+        ${number_index} ${number}
+    </#list>
+
+    ${numbers?size}<!--list的长度-->
+
+    <!--Map类型:方法一-->
+    <#list map as key,value>
+        ${key} ${value}
+    </#list>
+
+    <!--Map类型：方法二-->
+    <#list map?keys as key>
+        ${key} ${map[key]}
+    </#list>
+
+    <!--有get方法就可以,即使没有该属性，如description-->
+    ${user.name}
+    ${user.description}
+    ${user.getDescription()}
+    <!--括号不能少，否则student为null或不存在会抛出异常-->
+    ${(student.name)!"student或者name为null或不存在"}
+
+    <!--字符串常用内嵌函数-->
+    <#assign y="Perfact">
+    ${x+y}
+    ${(x+y)?substring(3,10)}<#--含头不含尾-->
+    ${(x+y)?length}
+    ${(x+y)?upper_case}
+    ${(x+y)?lower_case}
+    ${(x+y)?index_of('o')}
+    ${(x+y)?last_index_of('o')}
+    ${(x+y)?replace('o','xx')}
+
+    <!--宏定义1(宏和include都是为了提高复用性)-->
+    <#macro yy param1 param2>
+        ${param1} ${param2}
+    </#macro>
+
+    <!--宏调用1-->
+    <@yy param1="aa" param2="bb"/>
+
+    <#list colors as color>
+        <@yy param1=color_index param2=color/>
+    </#list>
+
+    <!--宏定义2-->
+    <#macro book bookList>
+        <#list bookList as b>
+            ${b}
+        </#list>
+    </#macro>
+
+    <!--宏调用2-->
+    <@book bookList=["xiyouji","shuihuzhuan"]/>
+
+    <!--宏定义3--->
+    <#macro zz param1 param2 param...>
+    ${param1} ${param2} ${param['param3']}
+    </#macro>
+
+    <!--宏调用3-->
+    <@zz param1="aa" param2="bb" param3="cc" param4="dd"/>
+
+    <!--nested-->
+    <#macro macro_name param1>
+        template_code ${param1}
+        <#nested param1+"nesetd第一个实参" "nested第二个实参"/><!--nested的实参-->
+    </#macro>
+
+    <@macro_name param1="zhangsan";nested_param1,nested_param2><!--nested的形参-->
+        nested_template ${nested_param1} ${nested_param2} //模板1
+    </@macro_name>
+
+    <@macro_name param1="zhangsan";nested_param1,nested_param2><!--nested的形参-->
+        <font color="red">nested_template ${nested_param1} ${nested_param2}</font> //模板2
+    </@macro_name>
+
+    <!--函数定义-->
+    <#function function_name param1 param2>
+        <#return param1+param2>
+    </#function>
+
+    <!--函数调用-->
+    结果为：${function_name(100,200)}
+
+</pre>
+</body>
+</html>
